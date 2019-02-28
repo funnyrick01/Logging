@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using LoggingWebsite.Models;
+using LoggingWebsite.Helpers;
 
 namespace LoggingWebsite.Controllers
 {
@@ -20,7 +21,8 @@ namespace LoggingWebsite.Controllers
 
         public AccountController()
         {
-        }
+
+           }
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
         {
@@ -139,6 +141,7 @@ namespace LoggingWebsite.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
+            LoggingHelper.writeToFile("info", "anonymous user checked the /register page");
             return View();
         }
 
@@ -156,7 +159,8 @@ namespace LoggingWebsite.Controllers
                 if (result.Succeeded)
                 {
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
+
+                    LoggingHelper.writeToFile("info", "account has been registered");
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
@@ -165,9 +169,10 @@ namespace LoggingWebsite.Controllers
 
                     return RedirectToAction("Index", "Home");
                 }
+                LoggingHelper.writeToFile("info", "Couldn't register: " + result.ToString());
                 AddErrors(result);
             }
-
+            LoggingHelper.writeToFile("warning", "Something failed, redisplaying the form.");
             // If we got this far, something failed, redisplay form
             return View(model);
         }
